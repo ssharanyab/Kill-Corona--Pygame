@@ -1,155 +1,158 @@
 import pygame
 import random
 import math
+from pygame import mixer
 
-# initialize game
+# initialize the pygame
 pygame.init()
 
 # Create the screen
 screen = pygame.display.set_mode((800, 600))
 
-# Title and icon
-pygame.display.set_caption("Go Corona Go")
+# background
+mixer.music.load('background.wav')
+mixer.music.play(-1)
+
+
+# Title and Icon
+pygame.display.set_caption("virus")
 icon = pygame.image.load('icon.png')
 pygame.display.set_icon(icon)
 
-# Tap
+# tap
 tapImg = pygame.image.load('tap.png')
-tapX = 480
-tapY = 20
+tapX = 370
+tapY = 50
 tapX_change = 0
 
-# Virus
-virusImg = []
-virusX = []
-virusY = []
-virusX_change = []
-virusY_change = []
-num_of_virus = 2
+# corona
+coronaImg = []
+coronaX = []
+coronaY = []
+coronaX_change = []
+coronaY_change = []
+num_of_corona = 2
 
-for i in range(num_of_virus):
-    virusImg.append(pygame.image.load('corona.png'))
-    virusX.append(random.randint(20, 780))
-    virusY.append(random.randint(50, 150))
-    virusX_change.append(2)
-    virusY_change.append(40)
+for i in range(num_of_corona):
+    coronaImg.append(pygame.image.load('corona.png'))
+    coronaX.append(random.randint(20, 780))
+    coronaY.append(random.randint(200, 220))
+    coronaX_change.append(4)
+    coronaY_change.append(4)
 
-# Drop
+# drop
 dropImg = pygame.image.load('drop.png')
 dropX = 0
-dropY = 20
+dropY = 150
 dropX_change = 0
-dropY_change = 10
-drop_state = "ready"
+dropY_change = 1
+drop_state = "ready"  # Ready - No drop on screen
 
 # Score
 score_value = 0
-font = pygame.font.SysFont("comicsansms", 32)
+font = pygame.font.Font('freesansbold.ttf', 32)
 textX = 10
 textY = 10
 
 # Game over
-over_text = pygame.font.SysFont("comicsansms", 80)
+over_text = pygame.font.Font('freesansbold.ttf', 72)
 
 
-# Show Score
 def show_score(x, y):
-    score = font.render("Score: " + str(score_value), True, (0, 0, 0))
+    score = font.render("Score : " + str(score_value), True, (0, 0, 0))
     screen.blit(score, (x, y))
 
 
-# Show Game over text
 def game_over_text():
-    over_text = font.render("Game over", True, (0, 0, 0))
+    over_text = font.render("Game over ", True, (0, 0, 0))
     screen.blit(over_text, (300, 250))
 
 
-# Draw Tap
 def tap(x, y):
     screen.blit(tapImg, (x, y))
 
 
-# Draw virus
-def virus(x, y, i):
-    screen.blit(virusImg[i], (x, y))
+def corona(x, y, i):
+    screen.blit(coronaImg[i], (x, y))
 
 
-# Destroy using drop
-def drop(x, y):
+def fire_drop(x, y):
     global drop_state
-    drop_state = "destroy"
-    screen.blit(dropImg, (x + 15, y + 15))
+    drop_state = "fire"
+    screen.blit(dropImg, (x + 16, y + 10))
 
 
-def isCollision(virusX, virusY, dropX, dropY):
-    distance = math.sqrt((math.pow(dropX- virusX,2))+(math.pow(dropY - virusY, 2)))
-    if distance < 120:
+def isCollision(coronaX, coronaY, dropX, dropY):
+    distance = math.sqrt((math.pow(coronaX - dropX, 2)) + (math.pow(coronaY - dropY, 2)))
+    if distance < 27:
         return True
 
 
 # Game Loop
 running = True
 while running:
-    # Screen background colour
-    screen.fill((224, 172, 105))
+    # Adding colour to screen
+    screen.fill((255, 228, 181))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        # if keystroke is pressed check whether its right or left
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                tapX_change = -2
+                tapX_change = -5
             if event.key == pygame.K_RIGHT:
-                tapX_change = +2
-            if event.key == pygame.K_DOWN or event.key == pygame.K_SPACE:
+                tapX_change = 5
+            if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
                 if drop_state is "ready":
                     dropX = tapX
-                    drop(dropX, dropY)
+                    fire_drop(dropX, dropY)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 tapX_change = 0
 
-    # Tap movement
+    # tap movement
     tapX += tapX_change
     if tapX <= 0:
         tapX = 0
-    if tapX >= 700:
-        tapX = 700
+    elif tapX >= 736:
+        tapX = 736
 
-    # Virus movement
-    for i in range(num_of_virus):
-        # Game over
-        if virusY[i] > 400:
-            for j in range(num_of_virus):
-                virusY[j] = 2000
+    # corona movement
+    for i in range(num_of_corona):
+
+        # Game Over
+        if coronaY[i] > 400:
+            for j in range(num_of_corona):
+                coronaY[j] = 2000
             game_over_text()
             break
-        virusX[i] += virusX_change[i]
-        if virusX[i] <= 0:
-            virusX_change[i] = 1
-            virusY[i] += virusY_change[i]
-        elif virusX[i] >= 730:
-            virusX_change[i] = -1
-            virusY[i] += virusY_change[i]
+        coronaX[i] += coronaX_change[i]
+        if coronaX[i] <= 0:
+            coronaX_change[i] = 1
+            coronaY[i] += coronaY_change[i]
+        elif coronaX[i] >= 736:
+            coronaX_change[i] = -1
+            coronaY[i] += coronaY_change[i]
         # Collision
-        collision = isCollision(virusX[i], virusY[i], dropX, dropY)
+        collision = isCollision(coronaX[i], coronaY[i], dropX, dropY)
         if collision:
             dropY = 20
             drop_state = "ready"
             score_value += 1
-            virusX[i] = random.randint(0, 736)
-            virusY[i] = random.randint(50, 150)
-        virus(virusX[i], virusY[i], i)
+            coronaX[i] = random.randint(0, 736)
+            coronaY[i] = random.randint(200, 220)
+        corona(coronaX[i], coronaY[i], i)
 
-    # Drop movement
-    if dropY <= 480:
-        dropY = 20
+    # drop movement
+    if dropY >= 600:
+        dropY = 150
         drop_state = "ready"
-    if drop_state is "destroy":
-        drop(dropX, dropY)
-        dropY -= dropY_change
+    if drop_state is "fire":
+        fire_drop(dropX, dropY)
+        dropY += dropY_change
 
     tap(tapX, tapY)
     show_score(textX, textY)
     pygame.display.update()
-

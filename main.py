@@ -15,7 +15,7 @@ mixer.music.play(-1)
 
 
 # Title and Icon
-pygame.display.set_caption("virus")
+pygame.display.set_caption("KILL CORONA")
 icon = pygame.image.load('icon.png')
 pygame.display.set_icon(icon)
 
@@ -31,7 +31,7 @@ coronaX = []
 coronaY = []
 coronaX_change = []
 coronaY_change = []
-num_of_corona = 2
+num_of_corona = 3
 
 for i in range(num_of_corona):
     coronaImg.append(pygame.image.load('corona.png'))
@@ -116,8 +116,8 @@ while running:
     tapX += tapX_change
     if tapX <= 0:
         tapX = 0
-    elif tapX >= 736:
-        tapX = 736
+    elif tapX >= 690:
+        tapX = 690
 
     # corona movement
     for i in range(num_of_corona):
